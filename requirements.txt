@@ -1,0 +1,5 @@
+evdev
+RPi.GPIO
+rpi-hardware-pwm
+pigpio
+pyserial
