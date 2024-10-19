@@ -2,7 +2,7 @@
 
 Control code for the Cal High Robotics pneumatic T-shirt cannon (Raspberry Pi + Xbox Wireless Controller).
 
-Copied from [XboxBedrock/t-shirt-cannon](https://github.com/XboxBedrock/t-shirt-cannon) (written by Sushrut); code files only, without the virtualenv.
+Original: [XboxBedrock/t-shirt-cannon](https://github.com/XboxBedrock/t-shirt-cannon) by Sushrut.
 
 ## What it does
 
