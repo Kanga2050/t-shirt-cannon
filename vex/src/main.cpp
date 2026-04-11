@@ -9,8 +9,8 @@ pwm_out dl = pwm_out(br.ThreeWirePort.A);
 pwm_out dr = pwm_out(br.ThreeWirePort.B);
 pwm_out tt = pwm_out(br.ThreeWirePort.C);
 pwm_out wn = pwm_out(br.ThreeWirePort.D);
-digital_out f1 = digital_out(br.ThreeWirePort.E);
-digital_out f2 = digital_out(br.ThreeWirePort.F);
+digital_out fr = digital_out(br.ThreeWirePort.E);
+digital_out fl = digital_out(br.ThreeWirePort.F);
 digital_out hn = digital_out(br.ThreeWirePort.G);
 analog_in pt = analog_in(br.ThreeWirePort.H);
 
@@ -34,14 +34,15 @@ int tri(bool p, bool n) {
 
 double psi() {
   double v = pt.value(analogUnits::range12bit) * 5.0 / 4095.0;
-  if (v < 0.5) v = 0.5;
+  if (v < 0.3) return -1;
   if (v > 4.5) v = 4.5;
+  if (v < 0.5) v = 0.5;
   return (v - 0.5) * 75.0;
 }
 
 int main() {
-  f1.set(false);
-  f2.set(false);
+  fr.set(false);
+  fl.set(false);
   hn.set(false);
   int n = 0;
   while (true) {
@@ -53,16 +54,20 @@ int main() {
     wn.state(tri(ct.ButtonR1.pressing(), ct.ButtonR2.pressing()), percent);
 
     bool ar = ct.ButtonL2.pressing();
-    f1.set(ar && ct.ButtonA.pressing());
-    f2.set(ar && ct.ButtonX.pressing());
+    bool f = ar && ct.ButtonA.pressing();
+    fr.set(f);
+    fl.set(!f && ct.ButtonX.pressing());
     hn.set(ct.ButtonL1.pressing());
 
     if (++n % 10 == 0) {
+      double p = psi();
       ct.Screen.setCursor(1, 1);
-      ct.Screen.print("%3.0f psi  %s   ", psi(), ar ? "ARMED" : "safe");
+      if (p < 0) ct.Screen.print("no sensor  %s   ", ar ? "ARMED" : "safe");
+      else ct.Screen.print("%3.0f psi  %s   ", p, ar ? "ARMED" : "safe");
       br.Screen.clearScreen();
       br.Screen.setCursor(1, 1);
-      br.Screen.print("tank %3.0f psi", psi());
+      if (p < 0) br.Screen.print("pressure sensor not read");
+      else br.Screen.print("chamber %3.0f psi", p);
     }
     wait(20, msec);
   }
